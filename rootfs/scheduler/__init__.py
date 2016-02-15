@@ -168,16 +168,12 @@ RCB_TEMPLATE = """\
         "containers": [
           {
             "name": "$containername",
-            "image": "quay.io/deisci/slugrunner:v2-beta",
+            "image": "$image",
             "imagePullPolicy": "Always",
             "env": [
             {
                 "name":"PORT",
                 "value":"5000"
-            },
-            {
-                "name":"SLUG_URL",
-                "value":"$image"
             },
             {
                 "name":"DEIS_APP",
