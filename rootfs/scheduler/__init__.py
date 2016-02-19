@@ -897,7 +897,7 @@ class KubeHTTPClient(AbstractSchedulerClient):
             error(resp, 'delete ReplicationController "{}" in Namespace "{}"',
                   name, namespace)
 
-    def _healthcheck(self, controller, path='/', port=8080, delay=30, timeout=1):
+    def _healthcheck(self, controller, path='/', port=5000, delay=30, timeout=1):
         # FIXME this logic ideally should live higher up
         if controller['spec']['selector']['type'] not in ['web', 'cmd']:
             return controller
