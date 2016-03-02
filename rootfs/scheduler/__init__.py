@@ -852,6 +852,8 @@ class KubeHTTPClient(AbstractSchedulerClient):
         tags = kwargs.get('tags', {})
         template["spec"]["template"]["spec"]["nodeSelector"] = tags
 
+        template["spec"]["imagePullSecrets"] = settings.IMAGE_PULL_SECRETS
+        
         # Deal with container information
         containers = template["spec"]["template"]["spec"]["containers"]
         containers[0]['args'] = args
