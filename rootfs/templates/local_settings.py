@@ -33,3 +33,5 @@ REGISTRATION_MODE = 'enabled'
 {{ if exists "/deis/controller/subdomain" }}
 DEIS_RESERVED_NAMES = ['{{ getv "/deis/controller/subdomain" }}']
 {{ end }}
+
+IMAGE_PULL_SECRETS = os.environ.get("IMAGE_PULL_SECRETS","").split(',')
