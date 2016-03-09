@@ -126,7 +126,25 @@ RCD_TEMPLATE = """\
                 "name":"DEIS_RELEASE",
                 "value":"$appversion"
             }
-            ]
+            ],
+            "healthcheck": {
+                "livenessProbe": {
+                    "httpGet": {
+                        "path": "/health-check",
+                        "port": 5000
+                    },
+                    "initialDelaySeconds": 10,
+                    "timeoutSeconds": 2
+                },
+                "readinessProbe": {
+                    "httpGet": {
+                        "path": "/health-check",
+                        "port": 5000
+                    },
+                    "initialDelaySeconds": 10,
+                    "timeoutSeconds": 2
+                }
+            }            
           }
         ],
         "nodeSelector": {}
@@ -188,6 +206,24 @@ RCB_TEMPLATE = """\
                 "value":"1"
             }
             ],
+            "healthcheck": {
+                "livenessProbe": {
+                    "httpGet": {
+                        "path": "/health-check",
+                        "port": 5000
+                    },
+                    "initialDelaySeconds": 10,
+                    "timeoutSeconds": 2
+                },
+                "readinessProbe": {
+                    "httpGet": {
+                        "path": "/health-check",
+                        "port": 5000
+                    },
+                    "initialDelaySeconds": 10,
+                    "timeoutSeconds": 2
+                }
+            },
             "volumeMounts":[
             {
                 "name":"minio-user",
@@ -229,7 +265,7 @@ SERVICE_TEMPLATE = """\
       {
         "name": "http",
         "port": 80,
-        "targetPort": 8080,
+        "targetPort": 5000,
         "protocol": "TCP"
       }
     ],
