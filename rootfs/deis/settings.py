@@ -310,3 +310,5 @@ DATABASES = {
 }
 
 APP_URL_REGEX = '[a-z0-9-]+'
+
+IMAGE_PULL_SECRETS = os.environ.get("IMAGE_PULL_SECRETS","").split(',')

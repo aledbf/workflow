@@ -145,7 +145,25 @@ RCD_TEMPLATE = """\
                 "name":"DEIS_RELEASE",
                 "value":"$appversion"
             }
-            ]
+            ],
+            "healthcheck": {
+                "livenessProbe": {
+                    "httpGet": {
+                        "path": "/health-check",
+                        "port": 5000
+                    },
+                    "initialDelaySeconds": 10,
+                    "timeoutSeconds": 2
+                },
+                "readinessProbe": {
+                    "httpGet": {
+                        "path": "/health-check",
+                        "port": 5000
+                    },
+                    "initialDelaySeconds": 10,
+                    "timeoutSeconds": 2
+                }
+            }            
           }
         ],
         "nodeSelector": {}
@@ -196,10 +214,6 @@ RCB_TEMPLATE = """\
             {
                 "name":"PORT",
                 "value":"5000"
-            },
-            {
-                "name":"SLUG_URL",
-                "value":"$slug_url"
             },
             {
                 "name":"DEIS_APP",
@@ -263,7 +277,7 @@ SERVICE_TEMPLATE = """\
       {
         "name": "http",
         "port": 80,
-        "targetPort": 8080,
+        "targetPort": 5000,
         "protocol": "TCP"
       }
     ],
@@ -1029,9 +1043,8 @@ class KubeHTTPClient(object):
                 secret = self._get_secret('deis', 'objectstorage-keyfile').json()
                 self._create_secret(namespace, 'objectstorage-keyfile', secret['data'])
 
-            l["slug_url"] = image
             l['image_pull_policy'] = settings.SLUG_BUILDER_IMAGE_PULL_POLICY
-            l["image"] = settings.SLUGRUNNER_IMAGE
+            l["image"] = image
             TEMPLATE = RCB_TEMPLATE
 
         template = json.loads(string.Template(TEMPLATE).substitute(l))
@@ -1039,6 +1052,8 @@ class KubeHTTPClient(object):
         # apply tags as needed
         tags = kwargs.get('tags', {})
         template["spec"]["template"]["spec"]["nodeSelector"] = tags
+
+        template["spec"]["imagePullSecrets"] = settings.IMAGE_PULL_SECRETS
 
         # Deal with container information
         container = template["spec"]["template"]["spec"]["containers"][0]
