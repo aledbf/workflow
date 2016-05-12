@@ -9,6 +9,7 @@ import base64
 
 from django.conf import settings
 from docker import Client
+from docker.utils import utils as docker_utils
 from .states import JobState
 import requests
 from requests_toolbelt import user_agent
@@ -653,8 +654,7 @@ class KubeHTTPClient(object):
                     'type': 'env'
                 }
                 self._create_secret(namespace, secret_name, secrets_env, labels)
-            else:
-                self._update_secret(namespace, secret_name, secrets_env)
+
 
             for key in env.keys():
                 data["env"].append({
@@ -724,11 +724,10 @@ class KubeHTTPClient(object):
 
     @retry(stop_max_attempt_number=3, wait_fixed=1000)
     def _get_port(self, image):
-        # try thrice to find the port before raising exception as docker-py is flaky
-        repo = image.split(":")
         # image already includes the tag, so we split it out here
         docker_cli = Client(version="auto")
-        docker_cli.pull(repo[0]+":"+repo[1], tag=repo[2], insecure_registry=True)
+        repo, tag = docker_utils.parse_repository_tag(image)
+        docker_cli.pull(repo, tag=tag, insecure_registry=True)
         image_info = docker_cli.inspect_image(image)
         if 'ExposedPorts' not in image_info['Config']:
             return None
